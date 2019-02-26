@@ -25,15 +25,16 @@ import sqlite3
 liste = []
 
 conn = sqlite3.connect('data.db')
-c = conn.cursor()
+c_LP = conn.cursor()
+c_communes = conn.cursor()
 
-for row_LP in c.execute('SELECT ville FROM LP'):
-	print(row_LP)
-	distanceMinimum=100
-	for row_communes in c.execute('SELECT ville FROM communes'):
+for row_LP in c_LP.execute('SELECT ville FROM LP'):
+	distanceMinimum=1000
+	for row_communes in c_communes.execute('SELECT communes.ville FROM communes, LP WHERE communes.departement = LP.departement'):
+		#print(row_communes.replace("(","'"))
 		print(row_LP)
 		print(row_communes)
-		print(levenshtein(row_LP,row_communes))
+		print(levenshtein("\"" + row_LP + "\"" , "\"" + row_communes + "\""))
 		if levenshtein(row_LP,row_communes) < distanceMinimum:
 			distanceMinimum = levenshtein(row_LP,row_communes)
 			correspondance = row_communes
@@ -43,6 +44,3 @@ print(liste)
 
 conn.commit()
 conn.close()
-
-
-
